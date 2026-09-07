@@ -1,9 +1,46 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Presentation Receiver</title>
+  <title>Presentation Receiver</title>
+  <script src="//www.gstatic.com/cast/sdk/libs/caf/v3/cast_receiver_framework.js"></script>
+  <style>
+    body {
+      margin: 0;
+      background: #000;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    img {
+      max-width: 100%;
+      max-height: 100vh;
+      object-fit: contain;
+    }
+  </style>
 </head>
-<body style="background:black; color:white; display:flex; justify-content:center; align-items:center; height:100vh; margin:0;">
-    <h1>Cast Presentation Receiver Ready</h1>
+<body>
+  <img id="slideImg" src="" style="display:none;" />
+
+  <script>
+    const context = cast.framework.CastReceiverContext.getInstance();
+    const NAMESPACE = 'urn:x-cast:com.example.presentation';
+
+    context.addCustomMessageListener(NAMESPACE, event => {
+      try {
+        const data = JSON.parse(event.data);
+        if (data.type === 'SHOW_SLIDE' && data.url) {
+          const img = document.getElementById('slideImg');
+          img.src = data.url;
+          img.style.display = 'block';
+        }
+      } catch (e) {
+        console.error('Failed to parse message', e);
+      }
+    });
+
+    context.start();
+  </script>
 </body>
 </html>
